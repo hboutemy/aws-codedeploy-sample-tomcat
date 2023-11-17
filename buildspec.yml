@@ -5,6 +5,11 @@ phases:
     commands:
       - echo Build completed on `date`
       - mvn package --no-transfer-progress
+  post_build:
+    commands:
+      - echo IQ_SERVER = ${IQ_SERVER}
+      - wget -q https://download.sonatype.com/clm/scanner/latest.jar
+      - java -jar latest.jar -s ${IQ_SERVER} -a ${IQ_CREDENTIALS} -i app .
 
 artifacts:
   files:
