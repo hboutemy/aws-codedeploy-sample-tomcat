@@ -5,11 +5,18 @@ phases:
     commands:
       - echo Build completed on `date`
       - mvn package --no-transfer-progress
+
+  # scan the resulting app with Sonatype Lifecycle
   post_build:
     commands:
-      - echo IQ_SERVER = ${IQ_SERVER}
-      - wget -q https://download.sonatype.com/clm/scanner/latest.jar
-      - java -jar latest.jar -s ${IQ_SERVER} -a ${IQ_CREDENTIALS} -i app .
+      # download IQ CLI command line scanner:
+      # sample code gets it from Sonatype download area on internet https://help.sonatype.com/iqserver/product-information/download-and-compatibility#DownloadandCompatibility-CLI
+      # this should be customised to a private storage, and with a fixed version (instead of "latest" moving target)
+      - wget -q https://download.sonatype.com/clm/scanner/latest.jar -O nexus-iq-cli-latest.jar
+
+      # run the scan: https://help.sonatype.com/iqserver/integrations/nexus-iq-cli
+      # requires IQ_SERVER and IQ_CREDENTIALS to have been configured as environment variables in the build environment
+      - java -jar nexus-iq-cli-latest.jar -s ${IQ_SERVER} -a ${IQ_CREDENTIALS} -i app .
 
 artifacts:
   files:
